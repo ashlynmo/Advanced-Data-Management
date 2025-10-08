@@ -29,8 +29,7 @@ CREATE TABLE genre_rental_summary (
 
 INSERT INTO genre_rental_detailed (rental_id, rental_date, title, genre) 
 SELECT 
- r.rental_id, 
- fn_format_rental_date(r.rental_date::DATE), 
+ r.rental_id,  fn_format_rental_date(r.rental_date::DATE), 
  f.title, c.name AS genre 
 FROM rental r 
 JOIN inventory i ON r.inventory_id = i.inventory_id 
@@ -51,13 +50,15 @@ RETURN NEW;
 END; 
 $$ LANGUAGE plpgsql;  
 
--- Trigger CREATE TRIGGER 
+-- Trigger 
 
+CREATE TRIGGER 
 trg_after_insert_detailed AFTER INSERT ON genre_rental_detailed 
 FOR EACH ROW 
 EXECUTE FUNCTION trg_update_summary();  
 
 -- PART F: stored procedure to refresh both the detailed table and summary table. Clears the contents of the detailed table and summary table and performs the raw data extraction from part D.  
+
 CREATE OR REPLACE PROCEDURE refresh_genre_report() 
 LANGUAGE plpgsql 
 AS $$ 
@@ -67,8 +68,7 @@ BEGIN
 
 INSERT INTO genre_rental_detailed (rental_id, rental_date, title, genre)   
 SELECT   
-    r.rental_id,   
-    fn_format_rental_date(r.rental_date),   
+    r.rental_id,      fn_format_rental_date(r.rental_date),   
     f.title, c.name   
 FROM  
     rental r 
